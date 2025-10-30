@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog – Farhad Javid</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; color: #333; }
+    header { background: #fff; border-bottom: 1px solid #eee; }
+    nav { max-width: 900px; margin: 0 auto; padding: 0.75rem 2rem; display: flex; gap: 1rem; }
+    nav a { color: #007acc; text-decoration: none; font-weight: 600; }
+    nav a:hover { text-decoration: underline; }
+    main { max-width: 900px; margin: 0 auto; padding: 2rem; }
+    h1 { margin: 0 0 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+    .card { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+    .card h2 { margin: 0 0 0.5rem; font-size: 1.1rem; }
+    .card p { margin: 0 0 0.75rem; color: #555; }
+    .card a { color: #007acc; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/blog/">Blog</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Blog</h1>
+    <div class="grid">
+      <!-- Post card -->
+      <article class="card">
+        <h2><a href="/blog/running-1000-miles.html">Running for 1,000 miles</a></h2>
+        <p>I ran 1,000 miles from Jan–Oct 2023. The animation shows my paths during these runs.</p>
+        <a href="/blog/running-1000-miles.html">Read more →</a>
+      </article>
+    </div>
+  </main>
+</body>
+</html>

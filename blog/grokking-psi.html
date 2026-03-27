@@ -39,16 +39,16 @@
     <h1>Grokking on modular addition</h1>
     <div class="meta">March 2026 · <a href="https://github.com/fjavid/psi">github.com/fjavid/psi</a></div>
 
-    <p>I put together a small study of <a href="https://arxiv.org/abs/2201.02177">grokking</a>—the delayed generalization that sometimes appears long after a model has memorized the training set. The code trains a tiny decoder-only transformer on modular addition mod 97, logs a pile of diagnostics (norms, gradients, Fourier structure in embeddings, PCA snapshots, operation tables), and ends with a train-fraction × weight-decay ablation that maps memorization, delayed generalization, and immediate generalization.</p>
+    <p><a href="https://arxiv.org/abs/2201.02177">Grokking</a> is delayed generalization: the model first <strong>memorizes</strong>—train accuracy shoots up and train loss collapses—while still doing poorly on held-out examples. Only after a long stretch of training does it <strong>generalize</strong>, often with a sharp rise in test accuracy on unseen cases. I trained a small decoder-only transformer on modular addition mod&nbsp;97 (all 9,409 pairs; 40% used for training) with AdamW and weight decay 0.3.</p>
 
-    <p>The run I care about most used 40% of the full 9,409-pair table for training, AdamW with weight decay 0.3, and 100k steps on a GPU. Train accuracy hit ~99% in a few hundred steps; test accuracy stayed low for a long plateau, then jumped to essentially perfect on the held-out pairs—classic grokking, as in the curves below. Separately, Fourier concentration in the number embeddings rises steadily across that plateau while test accuracy is flat—consistent with “gradual inside, abrupt outside.”</p>
+    <p>The plot shows the usual grokking shape. Train accuracy rises almost immediately; held-out accuracy stays near zero for tens of thousands of steps, then climbs to 100% on the full unseen table. Loss matches that: train loss drops early while held-out loss stays high until the same late transition—a long gap between memorizing the training pairs and generalizing to the rest.</p>
 
     <figure>
-      <a href="https://github.com/fjavid/psi/tree/main/outputs/main"><img src="/assets/grokking-training-curves.png" alt="Train and test accuracy and loss over training steps" /></a>
-      <figcaption class="caption">Train/test accuracy and loss for the main run. <a href="https://github.com/fjavid/psi/tree/main/outputs/main">All outputs in the psi repo →</a></figcaption>
+      <a href="https://github.com/fjavid/psi"><img src="/assets/grokking-training-curves.png" alt="Train and test accuracy and loss over training steps" /></a>
+      <figcaption class="caption">Train and test accuracy and loss for the main run (100k steps).</figcaption>
     </figure>
 
-    <p>Details, pilot sweep, ablation plots, and a longer write-up live in <a href="https://github.com/fjavid/psi">github.com/fjavid/psi</a>.</p>
+    <p>Code and notes are in <a href="https://github.com/fjavid/psi">github.com/fjavid/psi</a>.</p>
   </main>
 </body>
 </html>

@@ -41,14 +41,14 @@
 
     <p>I put together a small study of <a href="https://arxiv.org/abs/2201.02177">grokking</a>—the delayed generalization that sometimes appears long after a model has memorized the training set. The code trains a tiny decoder-only transformer on modular addition mod 97, logs a pile of diagnostics (norms, gradients, Fourier structure in embeddings, PCA snapshots, operation tables), and ends with a train-fraction × weight-decay ablation that maps memorization, delayed generalization, and immediate generalization.</p>
 
-    <p>The run I care about most used 40% of the full 9,409-pair table for training, AdamW with weight decay 0.3, and 100k steps on a GPU. Train accuracy hit ~99% in a few hundred steps; test accuracy stayed low for a long plateau, then jumped to essentially perfect on the held-out pairs—classic grokking. The interesting part for me was whether internal structure shows up before that jump. The Fourier concentration in the number embeddings rises steadily across the plateau, while test accuracy is flat until it isn’t—consistent with “gradual inside, abrupt outside.”</p>
+    <p>The run I care about most used 40% of the full 9,409-pair table for training, AdamW with weight decay 0.3, and 100k steps on a GPU. Train accuracy hit ~99% in a few hundred steps; test accuracy stayed low for a long plateau, then jumped to essentially perfect on the held-out pairs—classic grokking, as in the curves below. Separately, Fourier concentration in the number embeddings rises steadily across that plateau while test accuracy is flat—consistent with “gradual inside, abrupt outside.”</p>
 
     <figure>
-      <img src="/assets/grokking-fourier-vs-accuracy.png" alt="Fourier structured ratio and test accuracy over training steps" />
-      <figcaption class="caption">Fourier structured ratio in embeddings vs test accuracy (main diagnostic run).</figcaption>
+      <a href="https://github.com/fjavid/psi/tree/main/outputs/main"><img src="/assets/grokking-training-curves.png" alt="Train and test accuracy and loss over training steps" /></a>
+      <figcaption class="caption">Train/test accuracy and loss for the main run. <a href="https://github.com/fjavid/psi/tree/main/outputs/main">All outputs in the psi repo →</a></figcaption>
     </figure>
 
-    <p>Details, pilot sweep, ablation plots, and a longer write-up live in the <a href="https://github.com/fjavid/psi">psi</a> repository.</p>
+    <p>Details, pilot sweep, ablation plots, and a longer write-up live in <a href="https://github.com/fjavid/psi">github.com/fjavid/psi</a>.</p>
   </main>
 </body>
 </html>

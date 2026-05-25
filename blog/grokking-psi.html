@@ -1,54 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0WRXQ06RF8"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-0WRXQ06RF8');
-  </script>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grokking on modular addition – Farhad Javid</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; color: #333; }
-    header { background: #fff; border-bottom: 1px solid #eee; }
-    nav { max-width: 900px; margin: 0 auto; padding: 0.75rem 2rem; display: flex; gap: 1rem; }
-    nav a { color: #007acc; text-decoration: none; font-weight: 600; }
-    nav a:hover { text-decoration: underline; }
-    main { max-width: 900px; margin: 0 auto; padding: 2rem; background: #fff; }
-    h1 { margin-top: 0; }
-    .meta { color: #666; margin-bottom: 1rem; }
-    figure { margin: 1.25rem 0; }
-    img, video { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
-    .caption { color: #666; font-size: 0.95rem; margin-top: 0.4rem; }
-  </style>
+  <meta http-equiv="refresh" content="0; url=/projects/grokking-psi.html">
+  <title>Moved…</title>
+  <script>window.location.replace("/projects/grokking-psi.html");</script>
 </head>
 <body>
-  <header>
-    <nav>
-      <a href="/">Home</a>
-      <a href="/blog/">Blog</a>
-    </nav>
-  </header>
-
-  <main>
-    <h1>Grokking on modular addition</h1>
-    <div class="meta">March 2026 · <a href="https://github.com/fjavid/psi">github.com/fjavid/psi</a></div>
-
-    <p><a href="https://arxiv.org/abs/2201.02177">Grokking</a> is delayed generalization: the model first <strong>memorizes</strong>—train accuracy shoots up and train loss collapses—while still doing poorly on held-out examples. Only after a long stretch of training does it <strong>generalize</strong>, often with a sharp rise in test accuracy on unseen cases. I trained a small decoder-only transformer on modular addition mod&nbsp;97 (all 9,409 pairs; 40% used for training) with AdamW and weight decay 0.3.</p>
-
-    <p>The plot shows the usual grokking shape. Train accuracy rises almost immediately; held-out accuracy stays near zero for tens of thousands of steps, then climbs to 100% on the full unseen table. Loss matches that: train loss drops early while held-out loss stays high until the same late transition—a long gap between memorizing the training pairs and generalizing to the rest.</p>
-
-    <figure>
-      <a href="https://github.com/fjavid/psi"><img src="/assets/grokking-training-curves.png" alt="Train and test accuracy and loss over training steps" /></a>
-      <figcaption class="caption">Train and test accuracy and loss for the main run (100k steps).</figcaption>
-    </figure>
-
-    <p>Code and notes are in <a href="https://github.com/fjavid/psi">github.com/fjavid/psi</a>.</p>
-  </main>
+  <p>Page moved to <a href="/projects/grokking-psi.html">Projects — Grokking on modular addition</a>.</p>
 </body>
 </html>

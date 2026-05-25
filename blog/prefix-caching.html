@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0WRXQ06RF8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-0WRXQ06RF8');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prefix caching under prompt mutations – Farhad Javid</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; color: #333; }
+    header { background: #fff; border-bottom: 1px solid #eee; }
+    nav { max-width: 900px; margin: 0 auto; padding: 0.75rem 2rem; display: flex; gap: 1rem; }
+    nav a { color: #007acc; text-decoration: none; font-weight: 600; }
+    nav a:hover { text-decoration: underline; }
+    main { max-width: 900px; margin: 0 auto; padding: 2rem; background: #fff; }
+    h1 { margin-top: 0; }
+    .meta { color: #666; margin-bottom: 1rem; }
+    figure { margin: 1.25rem 0; }
+    img, video { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+    .caption { color: #666; font-size: 0.95rem; margin-top: 0.4rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/blog/">Blog</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Prefix caching under prompt mutations</h1>
+    <div class="meta">February 2026 · <a href="https://github.com/fjavid/prefix_caching">github.com/fjavid/prefix_caching</a></div>
+
+    <p><strong>Prefix caching</strong> reuses precomputed KV blocks for shared prompt prefixes, which lowers prefill work and usually helps time-to-first-token (TTFT) and throughput. Real traffic rarely repeats prompts exactly: retrieved chunks differ, parameters and units change, templates drift. This project is a benchmark I am putting together to measure how that kind of variation affects cache reuse and serving behavior—starting from two workload families, <strong>RAG-style</strong> prompts and <strong>structured scientific</strong> prompts, with a clear split between <em>meaning-preserving</em> mutations (reorder, format, noise) and <em>meaning-changing</em> ones (new parameters, different evidence, constraint flips).</p>
+
+    <p>The repository wires up controlled mutation generation, overlap metrics, validation, and severity scoring so each prompt pair is labeled before it hits the inference harness. Later stages add serving runs with and without caching, plus simple prompt-organization baselines (e.g. stable prefix first, volatile tail). There are no benchmark plots or tables on this page yet; I will add results here once the runs are ready.</p>
+
+    <p>Everything lives in <a href="https://github.com/fjavid/prefix_caching">github.com/fjavid/prefix_caching</a>, including a longer <code>project_description.md</code> on goals and methodology.</p>
+  </main>
+</body>
+</html>

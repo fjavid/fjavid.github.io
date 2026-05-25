@@ -12,7 +12,7 @@
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prefix caching under prompt mutations – Farhad Javid</title>
+  <title>How prompt layout determines what your KV cache can reuse – Farhad Javid</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; color: #333; }
     header { background: #fff; border-bottom: 1px solid #eee; }
@@ -21,10 +21,13 @@
     nav a:hover { text-decoration: underline; }
     main { max-width: 900px; margin: 0 auto; padding: 2rem; background: #fff; }
     h1 { margin-top: 0; }
+    main h2 { font-size: 1.15rem; margin-top: 1.75rem; margin-bottom: 0.5rem; }
     .meta { color: #666; margin-bottom: 1rem; }
     figure { margin: 1.25rem 0; }
     img, video { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
     .caption { color: #666; font-size: 0.95rem; margin-top: 0.4rem; }
+    main p { line-height: 1.55; }
+    main ul { line-height: 1.45; padding-left: 1.25rem; }
   </style>
 </head>
 <body>
@@ -37,14 +40,44 @@
   </header>
 
   <main>
-    <h1>Prefix caching under prompt mutations</h1>
+    <h1>How prompt layout determines what your KV cache can reuse</h1>
+    <p class="meta" style="margin-top:-0.25rem;color:#444;">Prefix caching under prompt mutations</p>
     <div class="meta">February 2026 · <a href="https://github.com/fjavid/prefix_caching">github.com/fjavid/prefix_caching</a></div>
 
-    <p><strong>Prefix caching</strong> reuses precomputed KV blocks for shared prompt prefixes, which lowers prefill work and usually helps time-to-first-token (TTFT) and throughput. Real traffic rarely repeats prompts exactly: retrieved chunks differ, parameters and units change, templates drift. This project is a benchmark I am putting together to measure how that kind of variation affects cache reuse and serving behavior—starting from two workload families, <strong>RAG-style</strong> prompts and <strong>structured scientific</strong> prompts, with a clear split between <em>meaning-preserving</em> mutations (reorder, format, noise) and <em>meaning-changing</em> ones (new parameters, different evidence, constraint flips).</p>
+    <p>Systems such as <a href="https://github.com/vllm-project/vllm">vLLM</a> and <a href="https://github.com/sgl-project/sglang">SGLang</a> can reuse cached K/V tensors for the longest <em>contiguous</em> matching prefix of each new prompt. A change early in the template invalidates everything after it, so TTFT gains depend on layout as much as on whether two prompts are “almost the same” in aggregate. Below are a few results from one RAG-QA sweep: Natural Questions-style prompts (~340 tokens on average); four-part structure (system instruction, user query, retrieved chunks, output instruction); TinyLlama-1.1B on one A100-40GB via vLLM.</p>
 
-    <p>The repository wires up controlled mutation generation, overlap metrics, validation, and severity scoring so each prompt pair is labeled before it hits the inference harness. Later stages add serving runs with and without caching, plus simple prompt-organization baselines (e.g. stable prefix first, volatile tail). There are no benchmark plots or tables on this page yet; I will add results here once the runs are ready.</p>
+    <p>I compared four mutations—<strong>typo</strong> and <strong>synonym_substitution</strong> on the query (early), <strong>formatting</strong> on the output block (already at the tail), and <strong>chunk_reorder</strong> inside the retrieval section (bulk of the tokens)—against two layouts: the original ordering and <strong>stable_first</strong>, which moves whichever block is mutated to the very end. One thousand paired examples per cell; cache flushed between comparisons.</p>
 
-    <p>Everything lives in <a href="https://github.com/fjavid/prefix_caching">github.com/fjavid/prefix_caching</a>, including a longer <code>project_description.md</code> on goals and methodology.</p>
+    <h2>Shared prefix grows when volatile text moves to the tail</h2>
+    <p>With stable_first the shared-prefix fraction tracks how large the mutated region is relative to the full prompt—you cannot reuse more than the genuinely unchanged portion.</p>
+    <ul>
+      <li><strong>typo</strong> / <strong>synonym_substitution</strong> (~10 volatile tokens early): shared prefix about 0.06 → ~0.98.</li>
+      <li><strong>formatting</strong> (change already at the tail): ~0.95 → ~0.95 (layout is effectively a no-op).</li>
+      <li><strong>chunk_reorder</strong> (most of the prompt is the chunk block): ~0.15 → ~0.19; little headroom because the volatile region dominates.</li>
+    </ul>
+
+    <figure>
+      <img src="/assets/prefix_caching_mutation_layout.png" alt="Shared prefix fraction by mutation type and prompt layout" />
+      <figcaption class="caption">Shared-prefix fraction vs mutation and layout (<em>original</em> vs <em>stable_first</em>).</figcaption>
+    </figure>
+
+    <h2>TTFT gain scales ~linearly with cached tokens (~17 μs per token)</h2>
+    <p>Pooling across conditions, TTFT savings track how many prefix tokens are served from cache. The linear fit lands near seventeen microseconds per cached token with intercept roughly zero (−0.3 ms, within noise). A first-order division from the setup yields similar numbers: roughly 2.2 GFLOPs per prefilled token and effective BF16 throughput on the order of 128 TFLOPS on an A100 (about forty percent utilization of nominal peak here) yields ~17.2 μs per token—versus ≈17.0 μs from the slope—consistent with substitution of prefill with a comparatively cheap KV lookup rather than unexplained overhead.</p>
+
+    <figure>
+      <img src="/assets/prefix_caching_ttft_gain_vs_first_divergence.png" alt="TTFT gain versus first divergence position / cached tokens" />
+      <figcaption class="caption">TTFT improvement vs recovered prefix length (effective cached-token picture).</figcaption>
+    </figure>
+
+    <h2>Layout captures most upside when volatility is localized</h2>
+    <p>Combining the two plots: recoverable TTFT is bounded by how much of the prompt can stay verbatim at the shared prefix. For small early mutations (typo, synonym substitution), stable_first lifts outcomes from near the measurement floor (~0.05 ms TTFT gain) toward the approximate full-reuse ceiling (~5.5 ms here) without touching the model. For formatting, the edited block already sits at the tail, so the layout pivot is redundant. For chunk reorder, most tokens move, so there is almost no stable prefix left to amortize regardless of ordering.</p>
+
+    <figure>
+      <img src="/assets/prefix_caching_ttft_gain_vs_shared_prefix.png" alt="TTFT gain versus shared prefix fraction" />
+      <figcaption class="caption">TTFT gain vs shared-prefix fraction; layout aligns small-volatile cases with high-reuse regimes.</figcaption>
+    </figure>
+
+    <p>More workloads, mutations, and analysis scripts live in <a href="https://github.com/fjavid/prefix_caching">github.com/fjavid/prefix_caching</a> (including <code>project_description.md</code> for the broader roadmap).</p>
   </main>
 </body>
 </html>
